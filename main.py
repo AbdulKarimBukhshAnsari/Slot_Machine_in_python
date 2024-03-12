@@ -14,14 +14,13 @@ symbol_values = {"A":9,"B":7,"C":5,"D":3}  #the values of each symbol.
 
 
 
-def slot_machine_random_symbols(rows,columns,symbols):
+def slot_machine_random_symbols(rows,columns,symbols): #make the matrices of slot machine.
     whole_symbols= [symbol for symbol,symbol_count in symbols.items()  for i in range(symbol_count)] #used list comprehension to store the symbols depends upon their frequency
     slot_machine = []
-    all_symbols = whole_symbols[:] #make the copy of the list so that the real list won't be changed
     for i in range(rows):
         row = []
         all_symbols = whole_symbols[:] #make the copy of the list so that the real list won't be changed we put inside the for loop so that in every iteration of outer loop the same list will be copied.
-        for j in range(columns):
+        for j in range(columns):   #this loop will iterate until and unless the columns will be completed
             value = random.choice(all_symbols)
             row.append(value)
             all_symbols.remove(value)
@@ -67,7 +66,7 @@ def bet_lines():  #decide how many lline you should add on bat
         lines = input(f"Enter the lines which you want to bet on {MIN__LINES}-{MAX__LINES}: ")
         if lines.isdigit():
             lines = int(lines)
-            if  1<=lines<=3:                
+            if  MIN__LINES<=lines<=MAX__LINES:                
                 break
             else:
                 print(f"Enter the value in between {MIN__LINES} and {MAX__LINES} inclusively. ")
@@ -76,7 +75,7 @@ def bet_lines():  #decide how many lline you should add on bat
             
     return lines       
             
-def bet_amount():
+def bet_amount_line():
     while True:
         bet_amount = input(f"Enter the amount which you want to bet on each line:$ ")
         if bet_amount.isdigit():
@@ -95,7 +94,7 @@ def winning(slots,lines,values,bet_value):
     winner_lines = []
     winning_amount = 0
     for lines in range(len(slots)):  #this loop will iterate equal to the length of the list or we can say slots
-        first_symbol = slots[lines][0]  #store the 1st symbol of all rows
+        first_symbol = slots[lines][0]  #store the 1st symbol of each rows.
         for j in range(len(slots)):  
             if first_symbol!= slots[lines][j]: #compare with each and every value of row
                 break
@@ -105,47 +104,55 @@ def winning(slots,lines,values,bet_value):
     return winner_lines , winning_amount
     
     
-def game(deposit_amount):
-    bet_line = bet_lines()
-    
-    while True:
-        bet_amount_line = bet_amount()
-        total_amount = bet_amount_line*bet_line  #total amount of bat
-        if total_amount<=deposit_amount:
-            break
-        else:
-            print(f"You entered the value which is greater than the deposit amount your total deposit is {int(deposit_amount)} so you can max enter the amount of ${int(deposit_amount/bet_line)}")
-    print(f"You bet on each line ${bet_amount_line} and your total amount for bet is ${bet_amount_line*bet_line}")
-    rows = slot_machine_random_symbols(ROWS,COLUMNS,symbol_counts)
-    print_slot_machine_column(rows)
-    columns = column(rows)
-    winner_lines ,winning_amount , = winning(columns,bet_line,symbol_values,bet_amount_line)
-    print(f"You won on {winner_lines}")
-    print(f"The winning amount is {winning_amount}")     
-    less_value = bet_amount_line*bet_line
-    
-    return less_value,total_amount,winning_amount,deposit_amount
-    
-def main():  #defining main function.
-    deposit_amount = deposit_cash()
-    print(deposit_amount)
-    winning_amount = 0
-    remain_amount_of_bat = deposit_amount
-    while True:
-        bet_lines = 
-        remain_amount_of_bat =deposits_amount-total_amount_bat
-        winning_amount = winnings_amount+winning_amount
-        print(f"You have now ${remain_amount_of_bat}")
-        inp = input("Do you wanna play again (yes/no): ").lower()
-        if inp!="yes" or inp!="no":
-            print("Enter a walid reply")
-        elif inp=="yes":
-            game(remain_amount_of_bat)
-        elif inp=="no":
-            break
-        elif remain_amount_of_bat<least_value:
-            break 
-    print(f"The game has been ended and you won {winning_amount}")
-    print(f"The reamining amout of bat is ${remain_amount_of_bat}")     
 
-main()
+
+def main(): #defining the main function
+    deposit_amount = deposit_cash()  
+    winning_amount = 0 #intilaize the winning varible with zero.
+    remain_value = deposit_amount
+    total_amount_global = 0
+    
+    while True:
+        inp = input("Do yo wanna play the game (yes/no): ").lower() #ask the user if you wanna play.
+        if remain_value<total_amount_global:  #will continue to be executed until and unless the remaining value as compare to the total amount foe global.
+            print("You don't have enough credit to bet again so the game  end... ") 
+            break
+        if inp=="yes":            
+            while True:
+                
+                bet_line = bet_lines()
+                bet_amount_li = bet_amount_line()
+                total_amount = bet_amount_li*bet_line  #total amount of bat
+                
+                if total_amount<=deposit_amount: #check if you have enough amount or not if it is than it will break the loop.
+                    break
+                else:
+                    print(f"You entered the value which is greater than the deposit amount your total deposit is {int(remain_value)} so you can max enter the amount of ${int(remain_value/bet_line)}")
+            
+            total_amount_global=total_amount
+            if remain_value<total_amount:
+                print("You don't have enough credit to bet again so the game  end... ") 
+                break
+            print(f"You bet on each line ${bet_amount_li} and total amount of bet is ${total_amount}. ")
+            rows = slot_machine_random_symbols(ROWS,COLUMNS,symbol_counts) #make the random matrices of the slot
+            print_slot_machine_column(rows) #transpose the matrices 
+            columns = column(rows)       #store that matix
+            winner_lines ,winning_amount_bet , = winning(columns,bet_line,symbol_values,bet_amount_li)   #check how many times the user has winned the bet in each turn.
+            winning_amount += winning_amount_bet  #add the winning value in winner amount
+            remain_value-=total_amount # less the value from deposit amount which is allready used in bet.
+            
+            print(f"You won on this turn ${winning_amount_bet} \nand you won on {tuple(winner_lines) } lines")
+            print(f"\nYou have totally won ${winning_amount} and the remaining value is ${remain_value} ")
+        elif inp =="no":
+            print("The game has been ended")
+            break
+        
+        else:
+            print("Invalid choice kindly give your naswer in (yes/no)")
+            continue
+    print(f"The total winning amount is ${winning_amount}")
+    print(f"The remaining amount is {remain_value} ")
+    print("____________Thank you for playing this game______________")
+    
+main()                    
+            
