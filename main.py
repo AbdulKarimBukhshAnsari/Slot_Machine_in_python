@@ -93,14 +93,14 @@ def bet_amount_line():
 def winning(slots,lines,values,bet_value):
     winner_lines = []
     winning_amount = 0
-    for lines in range(len(slots)):  #this loop will iterate equal to the length of the list or we can say slots
-        first_symbol = slots[lines][0]  #store the 1st symbol of each rows.
+    for i in range(lines):  #this loop will iterate equal to the length of the list or we can say slots
+        first_symbol = slots[i][0]  #store the 1st symbol of each rows.
         for j in range(len(slots)):  
-            if first_symbol!= slots[lines][j]: #compare with each and every value of row
+            if first_symbol!= slots[i][j]: #compare with each and every value of row
                 break
         else: #this else statement would be executed if and only if the if statement won't be true in any iteration
             winning_amount = winning_amount + (bet_value*values[first_symbol]) #simply we multiply the bet_amount on each line with the value of 
-            winner_lines.append(lines+1) #save the line on which the bet is true
+            winner_lines.append(i+1) #save the line on which the bet is true
     return winner_lines , winning_amount
     
     
@@ -110,13 +110,11 @@ def main(): #defining the main function
     deposit_amount = deposit_cash()  
     winning_amount = 0 #intilaize the winning varible with zero.
     remain_value = deposit_amount
-    total_amount_global = 0
+
     
     while True:
         inp = input("Do yo wanna play the game (yes/no): ").lower() #ask the user if you wanna play.
-        if remain_value<total_amount_global:  #will continue to be executed until and unless the remaining value as compare to the total amount foe global.
-            print("You don't have enough credit to bet again so the game  end... ") 
-            break
+       
         if inp=="yes":            
             while True:
                 
@@ -129,7 +127,10 @@ def main(): #defining the main function
                 else:
                     print(f"You entered the value which is greater than the deposit amount your total deposit is {int(remain_value)} so you can max enter the amount of ${int(remain_value/bet_line)}")
             
-            total_amount_global=total_amount
+            if remain_value<total_amount:  #will continue to be executed until and unless the remaining value as compare to the total amount foe global.
+                print("You don't have enough credit to bet again so the game  end... ") 
+                break
+            
             if remain_value<total_amount:
                 print("You don't have enough credit to bet again so the game  end... ") 
                 break
